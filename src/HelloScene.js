@@ -1,25 +1,26 @@
-//游戏接入的Demo
+//游戏接入JS的Demo
 /**
 *开发者 Amos
 */
 var functionLayer = cc.Layer.extend({
+
 	gameMenu:null,
 	loginMenu:null,
 	entryMenu:null,
 	userMenu:null,
 
-	ctor: function() {
+	ctor: function() {   //构造函数，初始化层调用
 		cc.log("ctor of Layer");
 		this._super();
 
 		var size = cc.director.getWinSize();   //获取屏幕尺寸
 		
-		var bg = new cc.Sprite(res.game_bg_jpg);
+		var bg = new cc.Sprite(res.game_bg_jpg);   //添加背景
 		bg.x = size.width / 2;
 		bg.y = size.height / 2 + 100;
 		this.addChild(bg);
 
-		var label1 = new cc.LabelTTF("功能列表"，"Arial", 58);
+		var label1 = new cc.LabelTTF("功能列表", "Arial", 58);
 		//lable.setPosition( size.width/2, size.height/2 + 200);
 		label1.x = size.width / 2;
 		label1.y = size.height / 2 + 200;
@@ -33,7 +34,7 @@ var functionLayer = cc.Layer.extend({
 		loginItemList.push(loginItem);
 
 		//模拟器跳过登录界面自动登录，主要用于前期检查游戏是否能正常跑在runtime上
-		var simLoginLabel = new cc.LabelTTF("跳过登录"， "Arial", 38);
+		var simLoginLabel = new cc.LabelTTF("跳过登录", "Arial", 38);
 		var simLoginItem = new cc.MenuItemLabel(simLoginLabel, this.showGameEntry, this);
 		loginItemList.push(simLoginItem);
 
@@ -60,13 +61,13 @@ var functionLayer = cc.Layer.extend({
 		//添加 entryMenu
 		var entryItemList = [];
 
-		var entryLabel = new cc.LabelTTF("进入游戏", "Arial", 38)
+		var entryLabel = new cc.LabelTTF("进入游戏", "Arial", 38);
 		var entryItem = new cc.MenuItemLabel(entryLabel, function(){
 			cc.director.pushScene(new sceneMain());         //推送该场景
 		},this );
 		entryItemList.push(entryItem);
 
-		var logoutLabel = new cc.LabelTTF("退出登录"， "Arial", 38);
+		var logoutLabel = new cc.LabelTTF("退出登录", "Arial", 38);
 		var logoutItem = new cc.MenuItemLabel(logoutLabel, this.logout, this);
 		entryItemList.push(logoutItem);
 
@@ -126,11 +127,11 @@ var functionLayer = cc.Layer.extend({
 		var preloadItems = new cc.MenuItemLabel(preloadLabels, this.preloadGroups, this);
 		userList.push(preloadItems);
 
-		var syncLabel = new cc.LabelTTF("测试同步扩展接口"，"Arial", 30);
+		var syncLabel = new cc.LabelTTF("测试同步扩展接口", "Arial", 30);
 		var syncItem = new cc.MenuItemLabel(syncLabel, this.callSyncFunc1, this);
 		userList.push(syncItem);
 
-		var asynLabel = new cc.LabelTTF("测试异步扩展接口"，"Arial", 30);
+		var asynLabel = new cc.LabelTTF("测试异步扩展接口", "Arial", 30);
 		var asynItem = new cc.MenuItemLabel(asynLabel, this.callAsyncFunc1, this);
 		userList.push(asynItem);
 
@@ -168,7 +169,7 @@ var functionLayer = cc.Layer.extend({
 		cc.log("logout...");
 		if(gplay.isSupportingFunc("logout")) {
 			gplay.logout(this.loginCallback.bind(this));
-			//this.callAsyncFunc("logout", null, this.loginCallback.bind(this));
+		  //this.callAsyncFunc("logout", null, this.loginCallback.bind(this));
 		} else {
 			cc.log("no, this channel doesn't support logout");
 		}
@@ -224,7 +225,7 @@ var functionLayer = cc.Layer.extend({
         gplay.pay(params, function (ret, msg){
         	switch(ret){
         		case gplay.ActionResultCode.PAY_RESULT_SUCCESS:
-        			cc.log("支付成功")；
+        			cc.log("支付成功");
         			break;
         		case gplay.ActionResultCode.PAY_RESULT_FAIL:
         			cc.log("支付失败");
@@ -363,7 +364,7 @@ var functionLayer = cc.Layer.extend({
 	callAsyncFunc1: function (){
 		cc.log("调用异步扩展接口");
 
-		gplay.callAsyncFunc("funcName", "", function (code,msg){
+		gplay.callAsyncFunc("funcName", " ", function (code,msg){
 			cc.log("code:" + code + ", msg:" + msg);
 
 		switch(code){
