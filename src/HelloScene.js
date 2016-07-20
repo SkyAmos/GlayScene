@@ -8,26 +8,27 @@ var functionLayer = cc.Layer.extend({
 	entryMenu:null,
 	userMenu:null,
 
-	ctor:function() {
+	ctor: function() {
 		cc.log("ctor of Layer");
 		this._super();
 
 		var size = cc.director.getWinSize();   //获取屏幕尺寸
 		
-		var bg = new cc.Sprite("res.game_bg_jpg");
+		var bg = new cc.Sprite(res.game_bg_jpg);
 		bg.x = size.width / 2;
-		bg.y = size.height / 2 + 200;
+		bg.y = size.height / 2 + 100;
+		this.addChild(bg);
 
-		var label = new cc.LabelTTF("功能列表"，"Arial", 28);
+		var label1 = new cc.LabelTTF("功能列表"，"Arial", 58);
 		//lable.setPosition( size.width/2, size.height/2 + 200);
-		label.x = size.width / 2;
-		label.y = size.height / 2 + 200;
-		this.addChild(label);
+		label1.x = size.width / 2;
+		label1.y = size.height / 2 + 200;
+		this.addChild(label1);
 
 		//添加loginMenu
 		var loginItemList = [];
 
-		var loginLabel = new cc.LabelTTF("使用 SkyDragonSDK 登录", "Arial", 38);
+		var loginLabel = new cc.LabelTTF("使用 Gplay 登录", "Arial", 38);
 		var loginItem = new cc.MenuItemLabel(loginLabel, this.gplayLogin, this);
 		loginItemList.push(loginItem);
 
@@ -42,8 +43,8 @@ var functionLayer = cc.Layer.extend({
 
 		cc.eventManager.addListener({
 			event: cc.EventListener.KEYBOARD,
-			onKeyReleased: function(keyCode, event){
-				if (keycode == cc.KEY.back) {
+			onKeyReleased: function(keyCode, event) {
+				if (keyCode == cc.KEY.back) {
 					gplay.quitGame();
 				}
 			}
@@ -125,9 +126,17 @@ var functionLayer = cc.Layer.extend({
 		var preloadItems = new cc.MenuItemLabel(preloadLabels, this.preloadGroups, this);
 		userList.push(preloadItems);
 
+		var syncLabel = new cc.LabelTTF("测试同步扩展接口"，"Arial", 30);
+		var syncItem = new cc.MenuItemLabel(syncLabel, this.callSyncFunc1, this);
+		userList.push(syncItem);
+
+		var asynLabel = new cc.LabelTTF("测试异步扩展接口"，"Arial", 30);
+		var asynItem = new cc.MenuItemLabel(asynLabel, this.callAsyncFunc1, this);
+		userList.push(asynItem);
+
 		this.userMenu = new cc.Menu(userList);
 		this.userMenu.setPosition(size.width / 2, size.height / 2 - 100);
-		this.userMenu.alignItemsVerticallWithPadding(5);
+		this.userMenu.alignItemsVerticallWithPadding (10);
 		this.addChild(this.userMenu);
 		this.userMenu.setVisible(true);
 
@@ -137,6 +146,7 @@ var functionLayer = cc.Layer.extend({
 
 	showLoginMenu: function() {
 		cc.log("show login menu");
+
 		var authorName = gplaySyncFunc("getAuthorName", '{"fakeParams":0}');
 		cc.log("authorName is:" + authorName);
 		this.loginMenu.setVisible(true);
@@ -281,7 +291,7 @@ var functionLayer = cc.Layer.extend({
 					cc.log("发送桌面快捷方式失败");
 					break;
 				default:
-					cc.log("未知返回码"+ retCode + ", msg" + msg);
+					cc.log("未知返回码:"+ retCode + ", msg:" + msg);
 					break;
 			}
 		}.bind(this));
@@ -303,8 +313,10 @@ var functionLayer = cc.Layer.extend({
 		gplay.setPreloadResponseCallback(null);
 
 		var scenes = new Array();
-		scenes.add(scene1)
+		scenes.push(scene1);
 		gplay.preloadGroup("scenes", function (ret, msg){
+			cc.log("ret:" + ret + ", msg:" + msg);
+
 			switch(ret){
 				case 0:
 					cc.log("加载场景1成功");
@@ -322,10 +334,12 @@ var functionLayer = cc.Layer.extend({
 		glay.setPreloadResponseCallback(null);
 
 		var scenes = new Array();
-		scenes.add(scene3);
-		scenes.add(scene4);
-		scenes.add(scene5);
-		gplay.preloadGroups("scenes", function (ret, msg){
+		scenes.push(scene3);
+		scenes.push(scene4);
+		scenes.push(scene5);
+		gplay.preloadGroups("scenes", function (ret, msg) {
+			cc.log("ret:" + ret + ", msg:" + msg);
+
 			switch(ret){
 				case 0: 
 					cc.log("场景3、4、5加载成功");
@@ -335,15 +349,41 @@ var functionLayer = cc.Layer.extend({
 					break;
 			}
 		}, this);
+	},
+
+	callSyncFunc1: function () {
+		cc.log("调用同步扩展接口");
+
+		var tmp1 = "syncFun";
+		var tmp2 = gplay.callSyncFunc("funcName", ""); 
+		var tmp = tmp1 + tmp2;
+		cc.log(tmp);
+	},
+
+	callAsyncFunc1: function (){
+		cc.log("调用异步扩展接口");
+
+		gplay.callAsyncFunc("funcName", "", function (code,msg){
+			cc.log("code:" + code + ", msg:" + msg);
+
+		switch(code){
+			case 0:
+				cc.log("调用异步扩展接口成功");
+			default:
+				cc.log("调用异步扩展接口失败");
+			}
+		}, this);
 	}
 
 });
 
 
 var sceneMain = cc.Scene.extend({
-	onEnter:function(){
+
+	onEnter: function(){
 		this._super();
 		var layer = new functionLayer();
 		this.addChild(layer);
+		
 	}
 });
