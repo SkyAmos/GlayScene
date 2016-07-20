@@ -2,17 +2,21 @@
 /**
 *开发者 Amos
 */
-var  functionLayer = cc.Layer.extend({
-	userList:null,
+var functionLayer = cc.Layer.extend({
 	gameMenu:null,
 	loginMenu:null,
 	entryMenu:null,
+	userMenu:null,
 
 	ctor:function() {
 		cc.log("ctor of Layer");
 		this._super();
 
 		var size = cc.director.getWinSize();   //获取屏幕尺寸
+		
+		var bg = new cc.Sprite("res.game_bg_jpg");
+		bg.x = size.width / 2;
+		bg.y = size.height / 2 + 200;
 
 		var label = new cc.LabelTTF("功能列表"，"Arial", 28);
 		//lable.setPosition( size.width/2, size.height/2 + 200);
@@ -56,7 +60,7 @@ var  functionLayer = cc.Layer.extend({
 		var entryItemList = [];
 
 		var entryLabel = new cc.LabelTTF("进入游戏", "Arial", 38)
-		var entryItem = new cc.MenuItemLabel( entryLabel, function(){
+		var entryItem = new cc.MenuItemLabel(entryLabel, function(){
 			cc.director.pushScene(new sceneMain());         //推送该场景
 		},this );
 		entryItemList.push(entryItem);
@@ -109,6 +113,24 @@ var  functionLayer = cc.Layer.extend({
 		this.gameMenu.alignItemsVerticallWithPadding(10);
 		this.addChild(this.gameMenu);
 		this.gameMenu.setVisible(true);
+
+		//添加userMenu
+		var userList = [];
+
+		var preloadLabel = new cc.LabelTTF("测试默认加载界面", "Arial", 30);
+		var preloadItem = new cc.MenuItemLabel(preloadLabel, this.preloadGroup, this);
+		userList.push(preloadItem);
+
+		var preloadLabels = new cc.LabelTTF("测试加载多个场景", "Arial", 30);
+		var preloadItems = new cc.MenuItemLabel(preloadLabels, this.preloadGroups, this);
+		userList.push(preloadItems);
+
+		this.userMenu = new cc.Menu(userList);
+		this.userMenu.setPosition(size.width / 2, size.height / 2 - 100);
+		this.userMenu.alignItemsVerticallWithPadding(5);
+		this.addChild(this.userMenu);
+		this.userMenu.setVisible(true);
+
 		return true;
 	},
 
@@ -273,6 +295,46 @@ var  functionLayer = cc.Layer.extend({
 	exitGame: function(){
 		cc.log("gplay quitGame");
 		gplay.quitGame();
+	},
+
+	preloadGroup: function(){
+		cc.log("加载场景1...");
+
+		gplay.setPreloadResponseCallback(null);
+
+		var scenes = new Array();
+		scenes.add(scene1)
+		gplay.preloadGroup("scenes", function (ret, msg){
+			switch(ret){
+				case 0:
+					cc.log("加载场景1成功");
+					break;
+				default:
+					cc.log("加载场景1失败");
+					break;
+			}
+		}, this);	
+	},
+
+	preloadGroups: function(){
+		cc.log("加载多场景...");
+
+		glay.setPreloadResponseCallback(null);
+
+		var scenes = new Array();
+		scenes.add(scene3);
+		scenes.add(scene4);
+		scenes.add(scene5);
+		gplay.preloadGroups("scenes", function (ret, msg){
+			switch(ret){
+				case 0: 
+					cc.log("场景3、4、5加载成功");
+					break;
+				default:
+					cc.log("场景3、4、5加载失败");
+					break;
+			}
+		}, this);
 	}
 
 });
